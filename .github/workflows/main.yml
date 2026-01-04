@@ -1,6 +1,6 @@
 name: Extreme_System_Pro_Build
 on:
-  workflow_dispatch: # 允許手動點擊按鈕執行
+  workflow_dispatch:
 
 jobs:
   build_ios:
@@ -8,7 +8,7 @@ jobs:
     runs-on: macos-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4 # 使用最新的 v4 版本
+        uses: actions/checkout@v4
       
       - name: Install Flutter
         uses: subosito/flutter-action@v2
@@ -19,22 +19,20 @@ jobs:
         run: flutter pub get
 
       - name: Configure iOS Project
-        # 這行是關鍵！它會自動生成缺失的 iOS 專案結構，修復你遇到的錯誤
         run: flutter create . --platforms=ios 
 
       - name: Build IPA
-        # 編譯 iOS 檔案但不進行數位簽名（適合 Sideloadly 安裝）
+        # 關鍵修正：加入 --no-codesign 參數，避免截圖中的簽名錯誤
         run: flutter build ios --release --no-codesign
 
       - name: Export IPA
-        # 將編譯出的檔案打包成 iOS 可識別的 .ipa 格式
+        # 手動將編譯產出的 Runner.app 包裝成 IPA 格式
         run: |
           mkdir -p Payload
           mv build/ios/iphoneos/Runner.app Payload/
           zip -r ExtremePro.ipa Payload
           
       - name: Upload Artifact
-        # 將打包好的檔案上傳到 GitHub，讓你下載
         uses: actions/upload-artifact@v4
         with:
           name: ExtremePro_IPA
