@@ -22,15 +22,16 @@ jobs:
         run: flutter create . --platforms=ios 
 
       - name: Build IPA
-        # 關鍵修正：加入 --no-codesign 參數，避免截圖中的簽名錯誤
-        run: flutter build ios --release --no-codesign
+        # 關鍵修正：在編譯指令中直接加入簽名禁用法
+        run: |
+          flutter build ios --release --no-codesign --code-sign-identity="" --code-signing-required=false
 
       - name: Export IPA
-        # 手動將編譯產出的 Runner.app 包裝成 IPA 格式
+        # 將 Runner.app 轉換為 .ipa
         run: |
           mkdir -p Payload
-          mv build/ios/iphoneos/Runner.app Payload/
-          zip -r ExtremePro.ipa Payload
+          cp -r build/ios/iphoneos/Runner.app Payload/
+          zip -vr ExtremePro.ipa Payload
           
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
