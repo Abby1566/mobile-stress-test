@@ -1,0 +1,22 @@
+name: extreme_system_pro
+description: "A professional system stress test app."
+version: 1.0.0+1
+publish_to: 'none'
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  battery_plus: ^6.1.0
+  wakelock_plus: ^1.2.8
+  screen_brightness: ^1.0.1
+  cupertino_icons: ^1.0.7
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+flutter:
+  uses-material-design: true
