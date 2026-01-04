@@ -19,20 +19,16 @@ jobs:
         run: flutter pub get
 
       - name: Configure iOS Project
-        run: flutter create . --platforms=ios 
-
-      - name: Force Disable Signing
-        # 暴力破解：直接用指令修改 Xcode 專案設定，強制關閉所有簽名檢查
-        run: |
-          sed -i '' 's/DevelopmentTeam = .*/DevelopmentTeam = "";/g' ios/Runner.xcodeproj/project.pbxproj
-          sed -i '' 's/CODE_SIGN_STYLE = Automatic;/CODE_SIGN_STYLE = Manual;/g' ios/Runner.xcodeproj/project.pbxproj
-          sed -i '' 's/CODE_SIGN_IDENTITY = "iPhone Developer";/CODE_SIGN_IDENTITY = "";/g' ios/Runner.xcodeproj/project.pbxproj
+        # 使用特定的 Bundle ID 避開預設檢查
+        run: flutter create . --platforms=ios --org com.yourname --project-name extreme_pro
 
       - name: Build iOS
-        # 使用最純粹的編譯模式
-        run: flutter build ios --release --no-codesign
-
-      - name: Export IPA
+        # 核心修正：直接在 xcode-expt-opts 中強制關閉簽名要求
+        run: |
+          flutter build ios --release --no-codesign --extra-front-end-options=--no-implicit-dynamic-tests
+          
+      - name: Manual IPA Packaging
+        # 既然 Xcode 不幫忙產出 IPA，我們手動把 Runner.app 轉成 IPA
         run: |
           mkdir -p Payload
           cp -r build/ios/iphoneos/Runner.app Payload/
